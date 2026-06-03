@@ -3,40 +3,40 @@ import asyncio
 import importlib
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
+
+# Import fungsi pangkalan data dari database.py
 from database import (
     add_ubot, remove_ubot, get_all_ubots, is_banned,
     ban_user, unban_user, add_user, get_all_users,
     create_payment, get_payment, update_payment_status
 )
 
-# ===================== CONFIG UTAMA (SIAP DIEDIT) =====================
+# ===================== CONFIG UTAMA (SIAP) =====================
 BOT_TOKEN = "8796670391:AAESeHo9zhwB6RU4ebqik-MBZTjgNLvyU-4"
 OWNER_ID = 1983044179
 
-# API ID & API HASH Resmi Telegram Android (100% Aman & Anti-Hack)
+# API ID & API HASH Resmi Telegram Android
 API_ID = 6
 API_HASH = "eb06d4abfb49dc3eeb1aeb98ae0f581e"
-# ======================================================================
+# ===============================================================
 
 bot = Client("KizxPremUbot", api_id=API_ID, api_hash=API_HASH, bot_token=BOT_TOKEN)
 running_ubots = {}
 
 def load_plugins_into_ubot(ubot_client):
-    for filename in os.listdir("./plugins"):
-        if filename.endswith(".py") and not filename.startswith("__"):
-            module_name = f"plugins.{filename[:-3]}"
-            if module_name in os.sys.modules:
-                module = importlib.reload(os.sys.modules[module_name])
-            else:
-                module = importlib.import_module(module_name)
-            for attr_name in dir(module):
-                attr = getattr(module, attr_name)
-                if hasattr(attr, "handlers"):
-                    for handler, group in attr.handlers:
-                        ubot_client.add_handler(handler, group)
+    try:
+        module = importlib.import_module("plugins")
+        importlib.reload(module)
+        for attr_name in dir(module):
+            attr = getattr(module, attr_name)
+            if hasattr(attr, "handlers"):
+                for handler, group in attr.handlers:
+                    ubot_client.add_handler(handler, group)
+    except Exception as e:
+        print(f"❌ Gagal memuatkan plugins.py: {e}")
 
 async def restart_all_ubots():
-    print("⏳ Menghidupkan kembali seluruh userbot premium dari database...")
+    print("⏳ Menghidupkan kembali seluruh userbot premium...")
     try:
         all_saved = await get_all_ubots()
         for data in all_saved:
@@ -169,7 +169,7 @@ async def buat_ubot_handler(client, callback_query):
             await status_msg.edit(
                 "✅ **USERBOT PREMIUM ANDA LENGKAP 200+ MODULE BERJAYA DIAKTIFKAN!**\n\n"
                 "Semua pengguna boleh melihat dan menggunakannya.\n"
-                "Cuba taip `.alive`, `.testcfd` or `.gcast [teks]` di mana-mana ruang bualan Telegram."
+                "Cuba taip `.alive`, `.testcfd` atau `.gcast [teks]` di mana-mana ruang bualan Telegram."
             )
         except Exception as e:
             await status_msg.edit(f"❌ **Gagal Mengaktifkan!**\nRalat Sesi: `{str(e)}`\nSila pastikan String Session anda sah.")
