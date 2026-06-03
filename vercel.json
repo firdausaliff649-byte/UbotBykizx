@@ -1,0 +1,12 @@
+import os
+from motor.motor_asyncio import AsyncIOMotorClient
+
+# Menggunakan Database bawaan, boleh diganti jika ada mongo sendiri
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
+client = AsyncIOMotorClient(MONGO_URL)
+db = client["kizx_ubot_db"]
+
+sessions_db = db["sessions"]
+blacklist_db = db["blacklist"]
+users_db = db["users"]
+payments_db = db["payments"]
